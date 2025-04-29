@@ -72,26 +72,18 @@ const loginUser = async (req, res) => {
     }
 }
 
-//API to get user profile data  ///do it tomorrow//
+//API to get user profile data  
 const getProfile = async (req, res) => {
     try {
-        const token = req.headers.usertoken;
-
-        if (!token) {
-            return res.status(401).json({ success: false, message: 'No token provided' });
-        }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); // replace 'your_jwt_secret' with your actual secret key
-
-        const userId = decoded.id; // Assuming your token contains the user's ID as `id`
+        const userId = req.userId;
 
         const userData = await User.findById(userId).select('-password');
 
-        res.json({ success: true, userData });
+        if (!userData) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
 
-        // const {userId} = req.body
-        // const userData = await User.findById(userId).select('-password')
-
-        // res.json({success: true, userData})
+        res.status(200).json({ success: true, userData });
 
     } catch (error) {
         console.log(error);
