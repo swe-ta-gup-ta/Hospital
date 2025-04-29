@@ -91,7 +91,7 @@ const getProfile = async (req, res) => {
     }
 }
 
-//API to update profile (do this tomorrow)
+//API to update profile
 const updateProfile = async (req, res) => {
     try {
         
@@ -99,17 +99,25 @@ const updateProfile = async (req, res) => {
         const {userId, name, contactInfo, address, dob, gender} = req.body
         const imageFile = req.file
 
-        if(!name || !contactInfo || !dob || !gender){ 
+        if(!name || !contactInfo || !dob || !gender || !address){ 
             return res.json({success: false, message: "Data missing"})
         }
 
-        await User.findByIdAndUpdate(userId, {name, contactInfo, address, dob, gender})
+        await User.findByIdAndUpdate(userId, {name, contactInfo, address, dob, gender, address})
 
         if(imageFile){
-            const imageUpload = await cloudinary.uploader.upload(imageFile.path, {resource_type: 'image'})
-            const imageUrl = imageUpload.secure_url
+            try {
+                const imageUpload = await cloudinary.uploader.upload(imageFile.path, {resource_type: 'image'})
+                const imageUrl = imageUpload.secure_url
 
-            await User.findByIdAndUpdate(userId, {image: imageUpload})
+                await User.findByIdAndUpdate(userId, {image: imageUrl})
+            } catch (error) {
+                console.error("Image upload failed:", uploadError);
+                return res.status(500).json({
+                    success: false,
+                    message: "Image upload to Cloudinary failed.",
+                });
+            }
         }
 
         res.json({success: true, message: "Profile updated"})
