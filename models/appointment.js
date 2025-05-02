@@ -1,14 +1,12 @@
 import mongoose, {Schema} from "mongoose";
 
 const appointmentSchema = new Schema({
-    doctor_id: {
-        type: Schema.Types.ObjectId, 
-        ref: 'Doctor', 
+    doctorId: {
+        type: String, 
         required: true 
     },
-    user_id: {
-        type: Schema.Types.ObjectId, 
-        ref: 'User', 
+    userId: {
+        type: String,
         required: true 
     },
     slotDate: {
@@ -20,6 +18,10 @@ const appointmentSchema = new Schema({
         required: true
     },
     doctorData: { 
+        type: Object,
+        required: true
+    },
+    userData: { 
         type: Object,
         required: true
     },
@@ -47,3 +49,4 @@ const appointmentSchema = new Schema({
 
 export const Appointment = mongoose.model('Appointment', appointmentSchema)
 export default Appointment
+
